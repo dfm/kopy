@@ -4,29 +4,23 @@ In the Key of Python (version 0.1)
 
 """
 
-# here, you should put the names of everything that you want imported when
-# you do something like "from marcomod import *"
 __all__ = ["Wave"]
 
-#Real code starts here...
-
-# only import what you need...
 import numpy as np
 import scipy.io.wavfile
 
-class Wave(object): # classes should have capitalized names... and inherit from "object"... don't ask...
+class Wave(object):
     def __init__(self, filename=None, data=None):
+        assert (filename is None) != (data is None), \
+                "You must specify a filename or provide data."
         if filename is not None:
             self.sps, self.data = scipy.io.wavfile.read(filename)
         elif data is not None:
             self.sps, self.data = data
 
-        # you don't need a loop to generate this...
-        # self.t = np.arange(self.data.shape[0], dtype=float)/self.sps
-        # but I prefer using a "property"... see below
-
-        self.channels = len(self.data.shape) # make this work for mono signals
-        assert self.channels in [1,2], "You're a tard"
+        self.channels = len(self.data.shape) # This should be 1 or 2
+        assert self.channels in [1,2], \
+                "Wave can only load mono or stereo files."
 
     def write(self, fn):
         """
@@ -62,13 +56,6 @@ class Wave(object): # classes should have capitalized names... and inherit from 
         except IndexError:
             return self.data
 
-    # below is some crazy Python foo for using properties...
-    # you can then access the left and right channels using something like:
-    #
-    #    W = Wave("example.wav")
-    #    R = W.right
-    #    L = W.left
-    #
     # Nice, eh?
     @property
     def left(self):
@@ -78,15 +65,10 @@ class Wave(object): # classes should have capitalized names... and inherit from 
     def right(self):
         return self.get_channel(1)
 
-    # we'll also use a property to access the timestamps because we want it
-    # to change if we change "sps", right?
     @property
     def time(self):
         return np.arange(self.data.shape[0], dtype=float)/self.sps
 
-    # and for the grand finale... try to see what this does!
     def __getitem__(self, ind):
-        if self.channels == 1 and len(ind) > 1: # make this work for mono
-            ind = ind[0]
         return Wave(data=(self.sps, self.data[ind]))
 
