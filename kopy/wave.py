@@ -55,6 +55,11 @@ class Wave(object):
             return self.data[:,channel]
         except IndexError:
             return self.data
+    
+    #append silence (useful for adding echo and stuff?). length in seconds
+    def appsil(self, length):
+        AS = np.append(self.data,np.zeros((self.sps*length,2),dtype='int16'),axis=0)
+        return Wave(data=[self.sps,AS])
 
     # Nice, eh?
     @property
