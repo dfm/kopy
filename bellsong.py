@@ -73,6 +73,7 @@ def main():
     for notefreq in runmel:
       start=int(k*Fs*0.25*60/bpm)
       note=bell(freq=notefreq,V=25,cut=0.02,damp=0.01)
+      print note
       end=start+len(note)
       run[start:end]+=note
       k+=1
