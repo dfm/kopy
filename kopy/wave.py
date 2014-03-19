@@ -32,7 +32,13 @@ class Wave(object):
         The filename to save as
 
     """
-    scipy.io.wavfile.write(fn,self.sps,self.data)
+    if 'float' in str(self.data.dtype):
+      if np.abs(self.data).mean()>0.05: print "this is going to be loud"
+      elif np.abs(self.data).max()>0.3: print "this might have loud parts"
+      scaled = np.int32(self.data*2147483647) ## 32 bit signed integer
+      scipy.io.wavfile.write(fn,self.sps,scaled)
+    else:
+      scipy.io.wavfile.write(fn,self.sps,self.data)
 
   def get_channel(self, channel):
     """
