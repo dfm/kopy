@@ -4,7 +4,10 @@ In the Key of Python (version 0.1)
 
 """
 
-__all__ = ["Wave","Track"]
+__all__ = ["sps","bits","Wave","Track"]
+
+sps=4410 ## 44100 is standard
+bits=16 ## 8 16 32 -- 32 is good
 
 import numpy as np
 import scipy.io.wavfile
@@ -35,7 +38,9 @@ class Wave(object):
     if 'float' in str(self.data.dtype):
       if np.abs(self.data).mean()>0.05: print "this is going to be loud"
       elif np.abs(self.data).max()>0.3: print "this might have loud parts"
-      scaled = np.int32(self.data*2147483647) ## 32 bit signed integer
+      if bits==8:scaled = np.int16(self.data*127) ## 32 bit signed integer
+      elif bits==16:scaled = np.int16(self.data*32767) ## 32 bit signed integer
+      elif bits==32:scaled = np.int32(self.data*2147483647) ## 32 bit signed integer
       scipy.io.wavfile.write(fn,self.sps,scaled)
     else:
       scipy.io.wavfile.write(fn,self.sps,self.data)
