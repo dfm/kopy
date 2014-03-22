@@ -5,7 +5,22 @@ import pylab as pb
 import scipy.io.wavfile
 import kopy as kp
 import random
+import subprocess
+import time
+import termios
+import contextlib
 sps=kp.sps
+
+@contextlib.contextmanager
+def raw_mode(file):
+    old_attrs = termios.tcgetattr(file.fileno())
+    new_attrs = old_attrs[:]
+    new_attrs[3] = new_attrs[3] & ~(termios.ECHO | termios.ICANON)
+    try:
+        termios.tcsetattr(file.fileno(), termios.TCSADRAIN, new_attrs)
+        yield
+    finally:
+        termios.tcsetattr(file.fileno(), termios.TCSADRAIN, old_attrs)
 
 def main():
   
@@ -85,6 +100,28 @@ def main():
   T2.write('PLAYERS_bassplayer.wav')
   T.add(T2)
   T.write('PLAYERS_both.wav')
+  
+  ##continually run
+  ##continually run
+  print '\n'*20,
+  print ' '*18 + '-'*10 + ' '*5,
+  print 'Any key to make a chord',
+  print ' '*5  + '-'*10,
+  print '\n'*10,
+  print ' '*18 + '-'*16+' '*5,
+  print 'Exit with q',
+  print ' '*5 + '-'*16,
+  print '\n'*16
+  with raw_mode(sys.stdin):
+    while True:
+      if sys.stdin.read(1)=='q':break
+      fundamental=110.*2**(random.randint(0,12)/12.)
+      intervals=random.choice(chtypes.values())
+      chord=fundamental*2**(np.array(intervals)/12.)
+      T=kp.plyr.sloppychord(kp.rack.bell,[0],[chord])
+      T.write('tmp.wav')
+      proc=subprocess.Popen(["afplay",'tmp.wav'])
+      time.sleep(0.1*random.random())
   
   return
 

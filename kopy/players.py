@@ -32,7 +32,7 @@ import scipy.io.wavfile
 import wave as kp
 import random
 
-def sloppychord(instrument,barlines,chords,bpm=120,volume=4): 
+def sloppychord(instrument,barlines,chords,bpm=120,volume=6): 
   assert len(barlines)==len(chords), "need one chord per bar"
   sloppiness=0.25 ## in units of beats
   T=kp.Track(bpm=bpm)
@@ -43,7 +43,7 @@ def sloppychord(instrument,barlines,chords,bpm=120,volume=4):
       T.add(instrument(note,volume=volume,bpm=bpm),beat=barline+random.gauss(0,sloppiness))
   return T
   
-def bassplayer(instrument,barlines,chords,bpm=120,volume=4):
+def bassplayer(instrument,barlines,chords,bpm=120,volume=6):
   assert len(barlines)==len(chords), "need one chord per bar"
   T=kp.Track(bpm=bpm)
   for i in range(len(barlines)-1):
